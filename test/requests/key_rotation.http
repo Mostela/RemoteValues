@@ -1,0 +1,31 @@
+POST http://localhost:8080/keyrotation
+Content-Type: application/json
+
+{
+  "key": "person",
+  "value": "Vanessa",
+  "service": "consumer"
+}
+
+###
+GET http://127.0.0.1:8080/keyrotation
+Content-Type: application/json
+
+###
+GET http://127.0.0.1/
+Accept: application/json
+
+###
+
+GET http://127.0.0.1/healthcheck
+Accept: application/json
+
+###
+POST http://127.0.0.1/remoteconfig
+Accept: application/json
+Content-Type: application/json
+
+{
+  "key": "person",
+  "dataValue": "Duda"
+}

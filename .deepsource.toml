@@ -1,0 +1,17 @@
+version = 1
+
+test_patterns = ["test/**"]
+
+exclude_patterns = [
+  "example/**",
+  "kubernetes/**"
+]
+
+[[analyzers]]
+name = "docker"
+
+[[analyzers]]
+name = "go"
+
+  [analyzers.meta]
+  import_root = "github.com/Mostela/RemoteValues"

@@ -1,0 +1,128 @@
+---
+apiVersion: v1
+kind: Namespace
+metadata:
+  name: producer-control
+  labels:
+    app: producer-control
+    version: v1
+---
+apiVersion: v1
+kind: ConfigMap
+metadata:
+  name: producer-control
+  namespace: producer-control
+  labels:
+    app: producer-control
+    version: v1
+---
+apiVersion: v1
+kind: ServiceAccount
+metadata:
+  name: producer-control
+  namespace: producer-control
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: Role
+metadata:
+  name: producer-control
+  namespace: producer-control
+  labels:
+    app: producer-control
+rules:
+  - apiGroups: [""]
+    resources: ["pods", "configmaps"]
+    verbs: ["get", "list", "update"]
+---
+apiVersion: rbac.authorization.k8s.io/v1
+kind: RoleBinding
+metadata:
+  name: producer-control
+  namespace: producer-control
+roleRef:
+  apiGroup: rbac.authorization.k8s.io
+  kind: Role
+  name: producer-control
+subjects:
+  - kind: ServiceAccount
+    name: producer-control
+---
+kind: Deployment
+apiVersion: apps/v1
+metadata:
+  name: producer-control
+  namespace: producer-control
+  labels:
+    app: producer-control
+    version: v1
+spec:
+  replicas: 3
+  strategy:
+    type: RollingUpdate
+  selector:
+    matchLabels:
+      app: producer-control
+      version: v1
+  template:
+    metadata:
+      name: producer-control
+      namespace: producer-control
+      labels:
+        app: producer-control
+        version: v1
+    spec:
+      affinity:
+        podAntiAffinity:
+          preferredDuringSchedulingIgnoredDuringExecution:
+            - podAffinityTerm:
+                labelSelector:
+                  matchLabels:
+                    app: producer-control
+                topologyKey: topology.kubernetes.io/zone
+              weight: 50
+      serviceAccountName: producer-control
+      containers:
+        - name: producer-control
+          ports:
+            - containerPort: 8080
+              name: rest-port
+          imagePullPolicy: Always
+          image: mostela/keyrotation:latest
+          resources:
+            requests:
+              memory: 128Mi
+              cpu: 1m
+            limits:
+              memory: 128Mi
+              cpu: 1m
+          livenessProbe:
+            failureThreshold: 2
+            httpGet:
+              port: 8080
+              path: /healthcheck
+          env:
+            - name: K8S_NAMESPACE
+              valueFrom:
+                fieldRef:
+                  fieldPath: metadata.namespace
+            - name: K8S_CONFIGMAP_NAME
+              value: producer-control
+---
+kind: Service
+apiVersion: v1
+metadata:
+  name: producer-control-service
+  namespace: producer-control
+  labels:
+    app: producer-control
+spec:
+  type: NodePort
+  externalTrafficPolicy: Cluster
+  externalName: control
+  selector:
+    app: producer-control
+  ports:
+    - port: 8080
+      name: rest-port
+      protocol: TCP
+      targetPort: 8080
