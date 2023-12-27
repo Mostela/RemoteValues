@@ -2,7 +2,7 @@
 <project version="4">
   <component name="ProjectModuleManager">
     <modules>
-      <module fileurl="file://$PROJECT_DIR$/.idea/keyRotationK8S.iml" filepath="$PROJECT_DIR$/.idea/keyRotationK8S.iml" />
+      <module fileurl="file://$PROJECT_DIR$/../RemoteValues/.idea/RemoteValues.iml" filepath="$PROJECT_DIR$/../RemoteValues/.idea/RemoteValues.iml" />
     </modules>
   </component>
 </project>

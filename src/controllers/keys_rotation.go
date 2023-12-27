@@ -1,9 +1,9 @@
 package controllers
 
 import (
+	config "RemoteValues/src"
+	k8s "RemoteValues/src/services"
 	"github.com/gin-gonic/gin"
-	config "keyRotationK8S/src"
-	k8s "keyRotationK8S/src/services"
 	"net/http"
 )
 

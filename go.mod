@@ -1,4 +1,4 @@
-module keyRotationK8S
+module RemoteValues
 
 go 1.21
 

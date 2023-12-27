@@ -1,8 +1,8 @@
 package routes
 
 import (
+	"RemoteValues/src/controllers"
 	"github.com/gin-gonic/gin"
-	"keyRotationK8S/src/controllers"
 	"log"
 )
 

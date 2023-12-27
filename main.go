@@ -1,7 +1,7 @@
 package main
 
 import (
-	"keyRotationK8S/src/routes"
+	"RemoteValues/src/routes"
 )
 
 func main() {
