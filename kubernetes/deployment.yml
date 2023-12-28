@@ -22,30 +22,31 @@ metadata:
   name: producer-control
   namespace: producer-control
 ---
+kind: ClusterRole
 apiVersion: rbac.authorization.k8s.io/v1
-kind: Role
 metadata:
-  name: producer-control
+  name: producer-control-cr
   namespace: producer-control
   labels:
     app: producer-control
 rules:
-  - apiGroups: [""]
-    resources: ["pods", "configmaps"]
-    verbs: ["get", "list", "update"]
+  - apiGroups: [ "" ]
+    resources: [ "pods", "configmaps" ]
+    verbs: ["get", "list", "update" ]
 ---
+kind: ClusterRoleBinding
 apiVersion: rbac.authorization.k8s.io/v1
-kind: RoleBinding
 metadata:
   name: producer-control
   namespace: producer-control
 roleRef:
   apiGroup: rbac.authorization.k8s.io
-  kind: Role
-  name: producer-control
+  kind: ClusterRole
+  name: producer-control-cr
 subjects:
   - kind: ServiceAccount
     name: producer-control
+    namespace: producer-control
 ---
 kind: Deployment
 apiVersion: apps/v1
@@ -118,7 +119,6 @@ metadata:
 spec:
   type: NodePort
   externalTrafficPolicy: Cluster
-  externalName: control
   selector:
     app: producer-control
   ports:

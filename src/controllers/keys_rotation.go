@@ -7,13 +7,18 @@ import (
 	"net/http"
 )
 
-type NewKeyRotationBody struct {
-	Key     string `json:"key"`
-	Value   string `json:"value"`
-	Service string `json:"service"`
+type ServiceBody struct {
+	App       string `json:"app"`
+	Namespace string `json:"namespace"`
 }
 
-func ReturnConfigs() k8s.ConfigMapConfig {
+type NewKeyRotationBody struct {
+	Key     string      `json:"key"`
+	Value   string      `json:"value"`
+	Service ServiceBody `json:"service"`
+}
+
+func SetConfigs() k8s.ConfigMapConfig {
 	configCM := k8s.ConfigMapConfig{
 		Name:      config.ConfigGlobal().ConfigMapName,
 		Namespace: config.ConfigGlobal().Namespace,
@@ -23,7 +28,7 @@ func ReturnConfigs() k8s.ConfigMapConfig {
 
 func SetNewKeyRotation(w *gin.Context) {
 	var dataBody NewKeyRotationBody
-	configCM := ReturnConfigs()
+	configCM := SetConfigs()
 	if err := w.Bind(&dataBody); err != nil {
 		w.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
 		return
@@ -39,8 +44,9 @@ func SetNewKeyRotation(w *gin.Context) {
 	}
 
 	_, errorSendRequest := k8s.SendRequestContainerHandler(&k8s.DeploymentConfig{
-		Namespace: configCM.Namespace,
-		Name:      dataBody.Service,
+		Namespace:         dataBody.Service.Namespace,
+		Name:              dataBody.Service.App,
+		EndpointSetValues: config.ConfigGlobal().EndpointSetValues,
 	}, configMapData)
 
 	if errorSendRequest != nil {
@@ -53,10 +59,10 @@ func SetNewKeyRotation(w *gin.Context) {
 }
 
 func ReturnKeysRotation(w *gin.Context) {
-	configCM := ReturnConfigs()
-	listConfigs, errorListConfig := k8s.ReturnConfigMapHandler(configCM)
-	if errorListConfig != nil {
-		w.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": errorListConfig.Error()})
+	configCM := SetConfigs()
+	listConfigs, err := k8s.ReturnConfigMapHandler(configCM)
+	if err != nil {
+		w.JSON(http.StatusBadRequest, gin.H{"status": "fail", "message": err.Error()})
 		return
 	}
 	w.JSON(http.StatusOK, &listConfigs.Data)

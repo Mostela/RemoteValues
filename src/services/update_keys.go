@@ -8,13 +8,14 @@ import (
 )
 
 type BodyKeyUpdate struct {
-	DataValue string `json:"dataValue"`
-	Key       string `json:"key"`
+	Value string `json:"value"`
+	Key   string `json:"key"`
 }
 
 type KeyUpdate struct {
-	ConfigMapData BodyKeyUpdate
-	PodInfo       PodInfo
+	ConfigMapData     BodyKeyUpdate
+	PodInfo           PodInfo
+	EndpointSetValues string
 }
 
 func UpdateKeysRequest(keyValue KeyUpdate) (bool, error) {
@@ -23,7 +24,7 @@ func UpdateKeysRequest(keyValue KeyUpdate) (bool, error) {
 		return false, errorBodyUpdate
 	}
 	response, errorResponse := http.Post(
-		fmt.Sprintf("http://%s:%d/remoteconfig", keyValue.PodInfo.IP, keyValue.PodInfo.Port),
+		fmt.Sprintf("http://%s:%d/%s", keyValue.PodInfo.IP, keyValue.PodInfo.Port, keyValue.EndpointSetValues),
 		"application/json; charset=utf-8",
 		bytes.NewBuffer(bodyUpdate),
 	)

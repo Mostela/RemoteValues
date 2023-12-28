@@ -1,14 +1,17 @@
-POST http://localhost:8080/keyrotation
+POST http://localhost:3000/keyrotation
 Content-Type: application/json
 
 {
   "key": "person",
-  "value": "Vanessa",
-  "service": "consumer"
+  "value": "Joao Carlos",
+  "service": {
+    "app": "consumer",
+    "namespace": "default"
+  }
 }
 
 ###
-GET http://127.0.0.1:8080/keyrotation
+GET http://127.0.0.1:3000/keyrotation
 Content-Type: application/json
 
 ###
@@ -19,13 +22,3 @@ Accept: application/json
 
 GET http://127.0.0.1/healthcheck
 Accept: application/json
-
-###
-POST http://127.0.0.1/remoteconfig
-Accept: application/json
-Content-Type: application/json
-
-{
-  "key": "person",
-  "dataValue": "Duda"
-}

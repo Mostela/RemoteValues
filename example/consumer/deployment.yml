@@ -36,7 +36,7 @@ spec:
               protocol: TCP
           env:
             - name: REMOTE_CONFIG_URL
-              value: http://control.producer-control.svc.cluster.local:8080
+              value: http://producer-control-service.producer-control.svc.cluster.local:8080/keyrotation
 ---
 apiVersion: v1
 kind: Service

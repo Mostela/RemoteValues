@@ -7,8 +7,9 @@ import (
 )
 
 type DeploymentConfig struct {
-	Namespace string
-	Name      string
+	Namespace         string
+	Name              string
+	EndpointSetValues string
 }
 
 type PodInfo struct {
@@ -52,10 +53,11 @@ func SendRequestContainerHandler(config *DeploymentConfig, dataConfigMap ConfigM
 	for _, pod := range containerList {
 		status, err := UpdateKeysRequest(KeyUpdate{
 			ConfigMapData: BodyKeyUpdate{
-				DataValue: dataConfigMap.Value,
-				Key:       dataConfigMap.Key,
+				Value: dataConfigMap.Value,
+				Key:   dataConfigMap.Key,
 			},
-			PodInfo: pod,
+			PodInfo:           pod,
+			EndpointSetValues: config.EndpointSetValues,
 		})
 		if err != nil {
 			fmt.Printf("%s", err.Error())
